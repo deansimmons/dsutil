@@ -6,11 +6,11 @@ Use case samples can be found in the test code, or look at the javadocs for more
 
 The project was built using JDK 11, but is backwards compatible to JDK 8.
 
-##Collection Operations
+## Collection Operations
 
 These operations are split into two static method classes. `CollectionHelper` and `MapHelper`.
 
-###CollectionHelper
+### CollectionHelper
 
 `CollectionHelper` methods are:
 
