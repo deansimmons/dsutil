@@ -93,7 +93,7 @@ public class TestCollectionHelper
     @Test
     public void testExplode()
     {
-        Set<Color> colors = (Set<Color>) CollectionHelper.explodeToEnum(LinkedHashSet::new, Color.class, ",", "GREEN,RED");
+        Set<Color> colors = CollectionHelper.explodeToEnum(LinkedHashSet::new, Color.class, ",", "GREEN,RED");
         assertThat(colors).isInstanceOf(LinkedHashSet.class).containsExactly(Color.GREEN, Color.RED);
 
         String[] strings = CollectionHelper.explodeToStringArray(",", "GREEN,RED");
@@ -105,10 +105,10 @@ public class TestCollectionHelper
         Set<String> stringSet = CollectionHelper.explodeToStringSet(TreeSet::new, ",", "GREEN,RED");
         assertThat(stringSet).isInstanceOf(TreeSet.class).containsExactly("GREEN", "RED");
 
-        Integer[] intArr = (Integer[]) CollectionHelper.explodeToArray(Integer.class, ",", "2,3,5");
+        Integer[] intArr = CollectionHelper.explodeToArray(Integer.class, ",", "2,3,5");
         assertThat(intArr).containsExactly(2, 3, 5);
 
-        Set<Integer> intSet = (Set<Integer>) CollectionHelper.explode(LinkedHashSet::new, Integer.class, ",", "2,3,5");
+        Set<Integer> intSet = CollectionHelper.explode(LinkedHashSet::new, Integer.class, ",", "2,3,5");
         assertThat(intSet).isInstanceOf(LinkedHashSet.class).containsExactly(2, 3, 5);
     }
 

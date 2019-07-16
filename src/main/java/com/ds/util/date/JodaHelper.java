@@ -11,14 +11,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.util.Map.entry;
+import static com.ds.util.collections.MapHelper.entry;
 
 /**
  * Convenience classes for converting Date Strings between formats using Joda.
  * <p>
  * This class also interprets "partial dates".
  */
-public class JodaHelper
+public final class JodaHelper
 {
     private JodaHelper()
     {
@@ -26,11 +26,19 @@ public class JodaHelper
     }
 
     public static final String STANDARD_DATE_FORMAT = "yyyy-MM-dd";
+
     public static final String FILE_DATE_TIME_FORMAT = "yyyy-MM-dd HH-mm-ss"; // colons aren't a great choice for filenames
     public static final String STANDARD_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String US_DATE_FORMAT = "MM/dd/yyyy";
     public static final String STANDARD_MILLISECOND_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
+    /**
+     * A conversion Map of partial input formats for standard and US date formats.
+     * <p>
+     * This Map is meant to be used by convertDate to convert partial date formats with US formats or with 2 digit years to partial dates in the standard format.
+     * <p>
+     * From there the converted dates can be used by interpretPartialTime().
+     */
     public static final Map<String, String> PARTIAL_TO_STANDARD_CONVERSIONS = MapHelper.asUnmodifiableMap(LinkedHashMap::new,
             entry("yy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss"),
             entry("MM/dd/yy HH:mm:ss", "yyyy-MM-dd HH:mm:ss"),
@@ -52,7 +60,7 @@ public class JodaHelper
     );
 
     /**
-     * Adds time to a STANDARD_DATE_FORMAT date string and returns the new time.
+     * Adds time to a STANDARD_DATE_FORMAT date String and returns the new date.
      *
      * @param date   Input date in STANDARD_DATE_FORMAT.
      * @param period Joda period for time addition. Periods below Day granularity won't work here.
@@ -65,7 +73,7 @@ public class JodaHelper
     }
 
     /**
-     * Adds time to date string of the supplied format and returns a new date string in the same format.
+     * Adds time to a date String returns a new date string in the same format.
      *
      * @param date   Input date/time.
      * @param format Format of the input and output date string.
@@ -130,7 +138,7 @@ public class JodaHelper
      * Converts a date using a Map for possible input and output formats.
      * <p>
      * The keys to the map represent the possible input format, and the corresponding value represents the output format for that key.
-     *
+     * <p>
      * The formats map is iterated over until a matching key input format is found. Order is important, and an earlier key can mask a later one.
      *
      * @param date    Input date/time String.
@@ -181,7 +189,7 @@ public class JodaHelper
      * <p>
      * Throws an exception if the date doesn't follow the format.
      *
-     * @param date The date to check.
+     * @param date   The date to check.
      * @param format The expected date format.
      */
     public static void validateDate(String date, String format)
@@ -238,16 +246,28 @@ public class JodaHelper
     private static final String INVALID_DATE = "0001-01-01";
 
     /**
-     * Method to turn a partial date/time String into a full date/time String according to the supplied granularity and boundary.
+     * Creates a full date String from a partial date String.
+     * The interpretation depends on upper and lower "boundaries" so that a range for the the partial date can be expressed.
      * <p>
-     * NOTE: currently only DAY granularity and partial dates in the STANDARD_DATE_FORMAT are supported.
+     * <b>NOTE:</b> currently only DAY granularity and partial dates in the STANDARD_DATE_FORMAT are supported. Times and other formats have not been implemented yet.
+     * <p>
+     * Example:
+     * <pre>
+     * String partialDate = "2006-02";
+     * String lowerDate = JodaHelper.interpretPartialTime(partialDate, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
+     * assert(lowerDate.equals("2006-02-01"));
+     * String upperInclusiveDate = JodaHelper.interpretPartialTime(partialDate, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
+     * assert(upperInclusiveDate.equals("2006-02-28"));
+     * String upperExclusiveDate = JodaHelper.interpretPartialTime(partialDate, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
+     *  assert(upperExclusiveDate.equals("2006-03-01"));
+     * </pre>
      *
-     * @param date        date The input partial date.
+     * @param date        date The partial date.
      * @param granularity The time granularity used for interpretations.
      * @param boundary    Used to determine whether to interpret partials as the lower end of the granularity or the upper end.
      * @return An interpreted date that fulfills the granularity stipulation using the boundary.
      */
-    public static String interpretPartialDate(String date, TimeGranularity granularity, TimeBoundary boundary)
+    public static String interpretPartialTime(String date, TimeGranularity granularity, TimeBoundary boundary)
     {
         if (date == null)
         {
@@ -312,7 +332,7 @@ public class JodaHelper
 
     /**
      * Adds a preceding 0 to date Strings where the year has only 1 digit.
-     *
+     * <p>
      * Date parsers don't seem to work too well with 1 character years.
      *
      * @param date The date string with the year first with a - format (Y-M-D), or year last with a / format (M/D/Y).

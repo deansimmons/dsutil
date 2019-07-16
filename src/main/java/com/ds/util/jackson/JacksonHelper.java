@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 /**
  * Convenience classes for JSON transformations through Jackson.
  */
-public class JacksonHelper
+public final class JacksonHelper
 {
     /**
      * Default Jackson Object mapper.
@@ -200,7 +200,7 @@ public class JacksonHelper
     }
 
     /**
-     * Method for easy String conversion of an Object using PRETTY_SET_AS_OBJECT_JSON_MAPPER.
+     * Method for easy String conversion of an Object using PRETTY_DEFAULT_JSON_MAPPER.
      * <p>
      * Useful for a quick toString() implementation.
      *
@@ -214,8 +214,6 @@ public class JacksonHelper
 
     /**
      * Method for easy String conversion of an Object.
-     * <p>
-     * Useful for a quick toString() implementation.
      *
      * @param obj    The Object to convert to a JSON String.
      * @param mapper The ObjectMapper to use for stringification.

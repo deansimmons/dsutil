@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Static method class with convenience methods for Map objects.
  */
-public class MapHelper
+public final class MapHelper
 {
     private MapHelper()
     {
@@ -16,7 +16,7 @@ public class MapHelper
     }
 
     /**
-     * Initializes a Map from a {@link Map.Entry} list.
+     * Creates and initializes a Map of <i>any</i> type.
      *
      * @param mapFactory The map to populate.
      * @param entries    The data to populate the map from. Use Map.entry or similar to supply these values.
@@ -32,19 +32,22 @@ public class MapHelper
     }
 
     /**
-     * Initializes an unmodifiable Map from {@link Map.Entry} list.
+     * Creates and initializes an unmodifiable Map of <i>any</i> type.
      * <p>
-     * Depending on the Map type the unmodifiable container will be in order:
-     * - NavigableMap
-     * - SortedMap
-     * - Map (if nothing else).
+     * <b>WARNING</b> This method returns the unmodifiable container - therefore the return type will be the closest matching interface between the mapFactory and Collections' unmodifiable methods.
+     * As an example a call to produce an unmodifiable TreeMap would not return a TreeMap, instead it would return a NavigableMap from Collections.unmodifiableNavigableMap(). See the return section for return types.
      *
      * @param mapFactory The map to populate.
      * @param entries    The data to populate the map from. Use Map.entry or similar to supply these values.
      * @param <M>        The generic for the mapFactory {@code Map<K,V>} and return type.
      * @param <K>        The key type for map.
      * @param <V>        The value type for map.
-     * @return Unmodifiable Map populated from elements.
+     * @return An unmodifiable Map with elements added. The actual type will be the interface most closely matching the mapFactory:
+     * <ul>
+     * <li>{@link NavigableMap}</li>
+     * <li>{@link SortedMap}</li>
+     * <li>{@link Map} (if nothing else)</li>
+     * </ul>
      */
     @SafeVarargs
     public static <M extends Map<K, V>, K, V> M asUnmodifiableMap(Supplier<M> mapFactory, Map.Entry<? extends K, ? extends V>... entries)
@@ -53,7 +56,7 @@ public class MapHelper
     }
 
     /**
-     * Method for flipping a {@code Map<K, V>} into a new {@code Map<V, K>} (keys and values are swapped).
+     * Creates a new Map with flipped key and value pairs from an original Map.
      * <p>
      * If the values of originalMap are not unique then the return is undefined.
      *
@@ -75,21 +78,24 @@ public class MapHelper
     }
 
     /**
-     * Method for flipping a {@code Map<K, V>} into a new unmodifiable {@code Map<V, K>} (keys and values are swapped).
+     * Creates a new unmodifiable Map with flipped key and value pairs from an original Map.
      * <p>
      * If the values of originalMap are not unique then the return is undefined.
-     *
-     * Depending on the Map type the unmodifiable container will be in order:
-     * - NavigableMap
-     * - SortedMap
-     * - Map (if nothing else).
+     * <p>
+     * <b>WARNING</b> This method returns the unmodifiable container - therefore the return type will be the closest matching interface between the mapFactory and Collections' unmodifiable methods.
+     * As an example a call to flip to an unmodifiable TreeMap would not return a TreeMap, instead it would return a NavigableMap from Collections.unmodifiableNavigableMap(). See the return section for return types.
      *
      * @param mapFactory  The flipped map to populate.
      * @param originalMap Original Map to copy from.
      * @param <M>         The generic for the mapFactory {@code Map<V,K>} and return.
      * @param <K>         Original Map key generic. New Map value generic.
      * @param <V>         Original Map value generic. New Map key generic.
-     * @return A Map with key V and value K.
+     * @return An unmodifiable Map with key V and value K. The actual type will be the interface most closely matching the mapFactory:
+     * <ul>
+     * <li>{@link NavigableMap}</li>
+     * <li>{@link SortedMap}</li>
+     * <li>{@link Map} (if nothing else)</li>
+     * </ul>
      */
     public static <M extends Map<V, K>, K, V> M unmodifiableFlip(Supplier<M> mapFactory, Map<K, V> originalMap)
     {
@@ -97,9 +103,7 @@ public class MapHelper
     }
 
     /**
-     * Convenience method for creating a {@link Map.Entry}.
-     * <p>
-     * Map.entry doesn't allow null values (or keys), and it is also available only on jdk 9 or later.
+     * Creates a {@code Map.Entry} value that can contain null keys and values (unlike Java 9's {@code Map.entry()}).
      *
      * @param key   Key for the entry.
      * @param value Value for the entry.

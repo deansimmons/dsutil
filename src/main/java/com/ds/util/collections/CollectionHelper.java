@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * Static method class with convenience methods for Collection objects.
  */
-public class CollectionHelper
+public final class CollectionHelper
 {
     private CollectionHelper()
     {
@@ -20,7 +20,7 @@ public class CollectionHelper
     }
 
     /**
-     * Creates or uses a Collection and populates that Collection with elements.
+     * Creates and initializes <i>any</i> Collection type.
      * <p>
      * Example - This command creates a LinkedHashSet of the first three prime numbers.
      * <p>
@@ -39,14 +39,10 @@ public class CollectionHelper
     }
 
     /**
-     * Creates or uses a Collection, populates that Collection with elements, and wraps the collection in an appropriate unmodifiable container.
+     * Creates and initializes <i>any</i> unmodifiable Collection type.
      * <p>
-     * Depending on the collection type the unmodifiable container will be in order:
-     * - NavigableSet
-     * - SortedSet
-     * - Set
-     * - List
-     * - Collection (if nothing else).
+     * <b>WARNING</b> This method returns the unmodifiable container - therefore the return type will be the closest matching interface between the collectionFactory and Collections' unmodifiable methods.
+     * As an example a call to produce an unmodifiable TreeSet would not return a TreeSet, instead it would return a NavigableSet from Collections.unmodifiableNavigableSet(). See the return section for return types.
      * <p>
      * Example - This command creates an Unmodifiable Set of the first three prime numbers.
      * <p>
@@ -56,7 +52,14 @@ public class CollectionHelper
      * @param elements          The elements to add.
      * @param <C>               The type of Collection to operate on.
      * @param <E>               The type of elements to add.
-     * @return The collection with elements added.
+     * @return An unmodifiable Collection with elements added. The actual type will be the interface most closely matching the collectionFactory:
+     * <ul>
+     * <li>{@link NavigableSet}</li>
+     * <li>{@link SortedSet}</li>
+     * <li>{@link Set}</li>
+     * <li>{@link List}</li>
+     * <li>{@link Collection} (if nothing else)</li>
+     * </ul>
      */
     @SafeVarargs
     public static <C extends Collection<E>, E> C asUnmodifiableCollection(Supplier<C> collectionFactory, E... elements)
@@ -99,9 +102,9 @@ public class CollectionHelper
     }
 
     /**
-     * Provides an easy way to create a populated List.
+     * Creates and initializes an array backed List.
      * <p>
-     * List will either be an empty list or an array backed list. The elements can be changed, but not added or removed.
+     * The elements can be changed, but not added or removed.
      *
      * @param elements The elements to add.
      * @param <E>      The type of elements.
@@ -110,20 +113,13 @@ public class CollectionHelper
     @SafeVarargs
     public static <E> List<E> asFixedList(E... elements)
     {
-        switch (elements.length)
-        {
-            case 0:
-                return Collections.emptyList();
-            /* Collections.singletonList is totally immutable, we want to be able to change the elements.
-            case 1:
-                return Collections.singletonList(elements[0]);*/
-            default:
-                return Arrays.asList(elements);
-        }
+        return elements.length != 0 ? Arrays.asList(elements) : Collections.emptyList();
     }
 
     /**
-     * Combines all elements in a Collection to a String. The order will be the natural iteration order of the Collection (if there is one).
+     * Creates a delimited String from from a Collection.
+     * <p>
+     * The order will be the natural iteration order of the Collection.
      *
      * @param glue   Delimiter placed between elements in the return string.
      * @param pieces Collection to implode.
@@ -158,7 +154,9 @@ public class CollectionHelper
     }
 
     /**
-     * Combines all elements in an Array to a String. The order will be the Array's order.
+     * Creates a delimited String from from a value list. .
+     * <p>
+     * The order will be the elements order.
      *
      * @param glue   Delimiter placed between elements in the return string.
      * @param pieces Array to implode.
@@ -172,7 +170,7 @@ public class CollectionHelper
     }
 
     /**
-     * Breaks String into tokens by delimiter and places results into a Collection.
+     * Creates a Collection of <i>any</i> type from a delimited String.
      *
      * @param collectionFactory The type of collection to create or use.
      * @param elementType       Element object for the type of elements to create. The type must have a String c'tor.
@@ -183,14 +181,14 @@ public class CollectionHelper
      * @return collection populated with tokens from string.
      * @throws IllegalArgumentException If elementType doesn't have a String c'tor.
      */
-    public static <C extends Collection<E>, E> Collection<E> explode(Supplier<C> collectionFactory, Class<E> elementType, String delimiter, String string)
+    public static <C extends Collection<E>, E> C explode(Supplier<C> collectionFactory, Class<E> elementType, String delimiter, String string)
     {
         if (string == null)
         {
             return null;
         }
 
-        Collection<E> collection = collectionFactory.get();
+        C collection = collectionFactory.get();
 
         String[] tokens = string.split(Pattern.quote(delimiter));
 
@@ -225,7 +223,9 @@ public class CollectionHelper
     }
 
     /**
-     * Breaks a String into an enum Collection.
+     * Creates an enum Collection of <i>any</i> type from a delimited String.
+     * <p>
+     * The tokens in the delimited String are expected to relate to the enum through Enum.valueOf().
      *
      * @param collectionFactory The type of collection to create or use.
      * @param elementType       Enum element type.
@@ -235,14 +235,14 @@ public class CollectionHelper
      * @param <E>               Element generic.
      * @return collection populated with tokens from string.
      */
-    public static <C extends Collection<E>, E extends Enum<E>> Collection<E> explodeToEnum(Supplier<C> collectionFactory, Class<E> elementType, String delimiter, String string)
+    public static <C extends Collection<E>, E extends Enum<E>> C explodeToEnum(Supplier<C> collectionFactory, Class<E> elementType, String delimiter, String string)
     {
         if (string == null)
         {
             return null;
         }
 
-        Collection<E> collection = collectionFactory.get();
+        C collection = collectionFactory.get();
 
         String[] tokens = string.split(Pattern.quote(delimiter));
 
@@ -257,11 +257,7 @@ public class CollectionHelper
     }
 
     /**
-     * Convenience method for explode without as much typing.
-     * <p>
-     * If you want to explode a String to a {@code Set<String>}, then this method can be used.
-     * <p>
-     * If set is not empty then new tokens will be appended.
+     * Creates a String Set from a delimited String.
      *
      * @param setFactory The type of set to create or use.
      * @param delimiter  String used to tokenize the input String.
@@ -271,15 +267,11 @@ public class CollectionHelper
      */
     public static <S extends Set<String>> Set<String> explodeToStringSet(Supplier<S> setFactory, String delimiter, String string)
     {
-        return (Set<String>) explode(setFactory, String.class, delimiter, string);
+        return explode(setFactory, String.class, delimiter, string);
     }
 
     /**
-     * Convenience method for explode without as much typing.
-     * <p>
-     * If you want to explode a String to a {@code List<String>}, then this method can be used.
-     * <p>
-     * If list is not empty then new tokens will be appended.
+     * Creates a String List from a delimited String.
      *
      * @param listFactory The type of list to create or use.
      * @param delimiter   String used to tokenize the input String.
@@ -289,13 +281,11 @@ public class CollectionHelper
      */
     public static <L extends List<String>> List<String> explodeToStringList(Supplier<L> listFactory, String delimiter, String string)
     {
-        return (List<String>) explode(listFactory, String.class, delimiter, string);
+        return explode(listFactory, String.class, delimiter, string);
     }
 
     /**
-     * Convenience method for explode without as much typing.
-     * <p>
-     * If you want to explode a String to a String Array, then this method can be used.
+     * Creates an String array from a delimited String.
      *
      * @param delimiter String used to tokenize the input String
      * @param string    Input String.
@@ -303,13 +293,11 @@ public class CollectionHelper
      */
     public static String[] explodeToStringArray(String delimiter, String string)
     {
-        return (String[]) explodeToArray(String.class, delimiter, string);
+        return explodeToArray(String.class, delimiter, string);
     }
 
     /**
-     * Convenience method for explode without as much typing.
-     * <p>
-     * If you want to explode a String to a generic Array, then this method can be used.
+     * Creates an array of <i>any</i> type from a delimited String.
      *
      * @param arrayType Class object for the type of Array to create.
      * @param delimiter String used to tokenize the input String.
@@ -318,21 +306,23 @@ public class CollectionHelper
      * @return Object[] containing the tokens from the input String delimited by delimiter. The Object[] can be downcast to arrayType.
      * @throws IllegalArgumentException If arrayType doesn't have a String c'tor.
      */
-    public static <T> Object[] explodeToArray(Class<T> arrayType, String delimiter, String string)
+    public static <T> T[] explodeToArray(Class<T> arrayType, String delimiter, String string)
     {
         if (string == null)
         {
             return null;
         }
 
-        Collection<T> array = explode(ArrayList::new, arrayType, delimiter, string);
-        return array.toArray((Object[]) Array.newInstance(arrayType, array.size()));
+        List<T> list = explode(ArrayList::new, arrayType, delimiter, string);
+        @SuppressWarnings("unchecked")
+        T[] array = (T[]) Array.newInstance(arrayType, list.size());
+        return list.toArray(array);
     }
 
     /**
-     * Convenience method for testing if two lists have the same members, but non necessarily the same order.
+     * Tests if two lists have the same members - regardless of order.
      * <p>
-     * WARNING: This method is destructive to b, expecting b to be modifiable.
+     * <b>WARNING:</b> This method is destructive to b, expecting b to be modifiable.
      *
      * @param a   The first List.
      * @param b   The second List. Must be modifiable and OK to alter.
@@ -358,9 +348,10 @@ public class CollectionHelper
     }
 
     /**
-     * Convenience method for transforming a collection that may contain sub-collections into a "flattened" collection without sub-collections.
+     * Takes a Collection with possible sub-collections and flattens it into a Collection without sub-collections.
+     * Also turns a non-Collection single element into a singleton.
      * <p>
-     * The values in the sub-collections are added to the flattened collection as they are encountered while iterating through the original collection.
+     * The values in the sub-collections are processed depth-first.
      *
      * @param value         The original collection or a non-collection value to be turned into a singleton Collection.
      * @param valueRemapper Optional custom method to remap values as they are added to the flattened Collection.

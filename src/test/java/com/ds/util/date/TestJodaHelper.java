@@ -2,7 +2,6 @@ package com.ds.util.date;
 
 import com.ds.util.collections.CollectionHelper;
 import com.ds.util.collections.MapHelper;
-import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Period;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -11,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static java.util.Map.entry;
+import static com.ds.util.collections.MapHelper.entry;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,27 +52,27 @@ public class TestJodaHelper
         String interpretedDate;
 
         date = "2006-02-01";
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
         assertThat(interpretedDate).isEqualTo("2006-02-01");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
         assertThat(interpretedDate).isEqualTo("2006-02-01");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
         assertThat(interpretedDate).isEqualTo("2006-02-02");
 
         date = "2006-02";
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
         assertThat(interpretedDate).isEqualTo("2006-02-01");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
         assertThat(interpretedDate).isEqualTo("2006-02-28");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
         assertThat(interpretedDate).isEqualTo("2006-03-01");
 
         date = "2006";
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.LOWER);
         assertThat(interpretedDate).isEqualTo("2006-01-01");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER);
         assertThat(interpretedDate).isEqualTo("2006-12-31");
-        interpretedDate = JodaHelper.interpretPartialDate(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
+        interpretedDate = JodaHelper.interpretPartialTime(date, JodaHelper.TimeGranularity.DAY, JodaHelper.TimeBoundary.UPPER_EXCLUDED);
         assertThat(interpretedDate).isEqualTo("2007-01-01");
     }
 
@@ -92,8 +91,8 @@ public class TestJodaHelper
         String newDate;
 
         // single digit date test as well
-        newDate = JodaHelper.convertDate("1-2-3", "yy-MM-dd", JodaHelper.STANDARD_DATE_FORMAT);
-        assertThat(newDate).isEqualTo("2001-02-03");
+        newDate = JodaHelper.convertDate("1-2-3", "yy-MM-dd", JodaHelper.US_DATE_FORMAT);
+        assertThat(newDate).isEqualTo("02/03/2001");
 
         newDate = JodaHelper.convertDate("03/04/2017", CollectionHelper.asFixedList("MM/dd/yy", JodaHelper.US_DATE_FORMAT), JodaHelper.STANDARD_DATE_FORMAT);
         assertThat(newDate).isEqualTo("2017-03-04");
