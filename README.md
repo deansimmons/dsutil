@@ -41,7 +41,7 @@ Set<Integer> intSet = CollectionHelper.explode(LinkedHashSet::new, Integer.class
 * `flattenCollections`: Takes a Collection with possible sub-collections and flattens it into a Collection without sub-collections. 
 Also turns a non-Collection single element into a singleton.
 
-###MapHelper methods
+### MapHelper methods
 
 `MapHelper` methods are:
 
@@ -76,7 +76,7 @@ import static com.ds.util.collections.MapHelper.entry;
 Map.Entry<Integer, String> entry = entry(2, "B");
 ```
 
-##JacksonHelper
+## JacksonHelper
 
 `JacksonHelper` provides convenient access to two statically loaded `ObjectMappers`.
 `JacksonHelper.DEFAULT` is for default formatting and `JacksonHelper.PRETTY_DEFAULT` is for "pretty" human readability with newlines.
